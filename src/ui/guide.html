@@ -7,25 +7,32 @@
 	<div class="guide-section">
 		<h3 class="guide-section-title">1. Getting started</h3>
 		<p class="guide-text">
-			The audio engine is dependency-free.<br />Copy <strong>two folders</strong> from this repo into your Vite project:
+			The audio engine is dependency-free. Copy the <strong>engine folder</strong> + your music in -<strong>where the engine goes depends on how your page loads</strong> (Vite serves <code class="guide-code">public/</code> raw, but won&rsquo;t import a <code class="guide-code">/public</code> JS file from bundled code):
 		</p>
 		<div class="guide-pre">
-			<code>src/sounds/     →  your src/sounds/      · the engine
-public/tracks/  →  your public/tracks/   · music (or mic)</code>
+			<code>// static page in public/ (libs via importmap, like this repo's scenes):
+src/sounds/  →  public/sounds/     · then  import Analyzer from '/sounds/Analyzer.js'
+
+// bundled entry (libs from npm, e.g. src/main.js importing 'three'):
+src/sounds/  →  your src/sounds/   · then  import Analyzer from './sounds/Analyzer.js'
+
+public/tracks/  →  your public/tracks/   · music (or mic), both cases</code>
 		</div>
 		<p class="guide-text">
-			On Vite, also copy <code class="guide-code">vite-plugin-vj-tracks.js</code> and register it &mdash; it keeps <code class="guide-code">tracks.json</code> in sync, so dropping an <code class="guide-code">.mp3</code> in <code class="guide-code">public/tracks/</code> adds it to the playlist:
+			Also copy <code class="guide-code">vite-plugin-vj-tracks.js</code> and register it -it keeps <code class="guide-code">tracks.json</code> in sync, so dropping an <code class="guide-code">.mp3</code> in <code class="guide-code">public/tracks/</code> adds it to the playlist:
 		</p>
 		<div class="guide-pre">
 			<code>import vjTracksPlugin from './vite-plugin-vj-tracks.js'
 export default defineConfig( { plugins: [ vjTracksPlugin() ] } )</code>
 		</div>
 		<p class="guide-text">
-			Import the analyzer in your code and read the signals each frame:
+			Cold start: the plugin writes <code class="guide-code">tracks.json</code> just after the dev server&rsquo;s first scan, so a brand-new run can&rsquo;t serve it yet and falls back to the mic -keep one generated <code class="guide-code">tracks.json</code> in the folder, or restart <code class="guide-code">pnpm dev</code> once.
+		</p>
+		<p class="guide-text">
+			Then read the signals each frame (same in both setups):
 		</p>
 		<div class="guide-pre">
-			<code>import Analyzer from '/sounds/Analyzer.js'
-const audio = new Analyzer()
+			<code>const audio = new Analyzer()
 
 audio.onAudio( a => {
   a.volume             // instant loudness        0..1
@@ -46,18 +53,24 @@ audio.onAudio( a => {
 	<div class="guide-section">
 		<h3 class="guide-section-title">2. The helper modules</h3>
 		<p class="guide-text">
-			The <code class="guide-code">Analyzer</code> lazy-loads these for you in standalone mode &mdash; reach for them only when you want manual control. All three live in <code class="guide-code">src/sounds/</code>.
+			The <code class="guide-code">Analyzer</code> lazy-loads these for you in standalone mode -reach for them only when you want manual control. All three live in <code class="guide-code">src/sounds/</code>.
 		</p>
 		<div class="guide-pre">
-			<code>// AnalyzerDebug- the draggable overlay ('d' toggles it, on by default)
+			<code>// AnalyzerDebug- live overlay
 import AnalyzerDebug from '/sounds/AnalyzerDebug.js'
-new AnalyzerDebug( audio )       // .toggle() · .show() · .hide() · .dispose()
+const debug = new AnalyzerDebug( audio )
+debug.toggle()
+debug.show()
+debug.hide()
+debug.dispose()
 
-// SoundPlayer- playlist + audio + keys (m · . · ,), lives at audio.player
-audio.player?.useTrack( url )    // load a track  (also .nextTrack / .prevTrack)
-audio.player?.useMic()           // switch to the microphone
+// SoundPlayer- music, at audio.player
+audio.player?.useTrack( url )
+audio.player?.nextTrack()
+audio.player?.prevTrack()
+audio.player?.useMic()
 
-// PlayerControl- the "now playing" widget (name = skip · scrub · time)
+// PlayerControl- now playing widget
 import PlayerControl from '/sounds/PlayerControl.js'
 new PlayerControl( { getAudioEl, getSource, getTrackName, onSkip, onSeek } )</code>
 		</div>
@@ -66,14 +79,14 @@ new PlayerControl( { getAudioEl, getSource, getTrackName, onSkip, onSeek } )</co
 	<div class="guide-section">
 		<h3 class="guide-section-title">3. Integrate it here</h3>
 		<p class="guide-text">
-			Add your scene as a <strong>local folder</strong> and open a <strong>pull request</strong> &mdash; no list to edit. Copy the template, rename it, and edit its <code class="guide-code">index.html</code>:
+			Add your scene as a <strong>local folder</strong> and open a <strong>pull request</strong> -no list to edit. Copy the template, rename it, and edit its <code class="guide-code">index.html</code>:
 		</p>
 		<div class="guide-pre">
 			<code>public/vj-scenes/template/  →  public/vj-scenes/your-name/
 # edit index.html, save, then open a PR</code>
 		</div>
 		<p class="guide-text">
-			Save and the dev server auto-detects the folder. Once your PR is merged it joins the loop: the host loads it in an iframe and the same <code class="guide-code">Analyzer</code> auto-switches to <strong>receive</strong> mode &mdash; it reads the show's live audio instead of its own. Nothing in your code changes.
+			Save and the dev server auto-detects the folder. Once your PR is merged it joins the loop: the host loads it in an iframe and the same <code class="guide-code">Analyzer</code> auto-switches to <strong>receive</strong> mode -it reads the show's live audio instead of its own. Nothing in your code changes.
 		</p>
 	</div>
 </div>

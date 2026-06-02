@@ -23,12 +23,13 @@ export default class AnalyzerDebug {
 		const dpr = Math.min( 2, window.devicePixelRatio || 1 )
 		this.canvas.width = width * dpr
 		this.canvas.height = height * dpr
-		this.canvas.style.cssText = `position:fixed;right:14px;bottom:60px;z-index:9999;width:${ width }px;height:${ height }px;border:1px solid #2a2a2a;border-radius:8px;background:rgba(8,10,18,.82);cursor:grab;backdrop-filter:blur(6px)`
+		this.canvas.style.cssText = `position:fixed;right:14px;bottom:60px;z-index:9999;width:${ width }px;height:${ height }px;border:1px solid #2a2a2a;border-radius:8px;background:rgba(8,10,18,.82);backdrop-filter:blur(6px);filter:grayscale(1);opacity:.35;transition:opacity .25s ease,filter .25s ease`
 		this.ctx = this.canvas.getContext( '2d' )
 		this.ctx.scale( dpr, dpr )
 		this.ctx.font = '10px ui-monospace,Menlo,monospace'
 
-		this.drag( this.canvas )
+		this.canvas.addEventListener( 'pointerenter', () => { this.canvas.style.opacity = '1'; this.canvas.style.filter = 'grayscale(0)' } )
+		this.canvas.addEventListener( 'pointerleave', () => { this.canvas.style.opacity = '.35'; this.canvas.style.filter = 'grayscale(1)' } )
 		document.body.appendChild( this.canvas )
 		this.raf = requestAnimationFrame( this.update )
 	}
@@ -112,29 +113,6 @@ export default class AnalyzerDebug {
 			ctx.fillText( '(or press any key)', W / 2, H / 2 + 10 )
 			ctx.textAlign = 'left' // reset
 		}
-	}
-
-	drag = ( el ) => {
-		let sx = 0, sy = 0, ox = 0, oy = 0, on = false
-		el.addEventListener( 'pointerdown', ( e ) => {
-			on = true
-			sx = e.clientX
-			sy = e.clientY
-			ox = el.offsetLeft
-			oy = el.offsetTop
-			el.setPointerCapture( e.pointerId )
-			el.style.cursor = 'grabbing'
-		} )
-		el.addEventListener( 'pointermove', ( e ) => {
-			if ( ! on ) return
-			el.style.left = ox + ( e.clientX - sx ) + 'px'
-			el.style.top = oy + ( e.clientY - sy ) + 'px'
-		} )
-		el.addEventListener( 'pointerup', ( e ) => {
-			on = false
-			el.releasePointerCapture( e.pointerId )
-			el.style.cursor = 'grab'
-		} )
 	}
 
 	show = () => {

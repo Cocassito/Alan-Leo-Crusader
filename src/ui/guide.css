@@ -86,7 +86,7 @@ dialog#integration-guide[open]::backdrop {
 .guide-title {
 	margin: 0 0 32px 0;
 	font-family: 'Outfit', sans-serif;
-	font-size: 14px;
+	font-size: 16px;
 	font-weight: 700;
 	letter-spacing: 0.25em;
 	color: #ffffff;
@@ -107,9 +107,9 @@ dialog#integration-guide[open]::backdrop {
 .guide-section-title {
 	margin: 0 0 12px 0;
 	font-family: 'Outfit', sans-serif;
-	font-size: 10px;
+	font-size: 13.5px;
 	font-weight: 700;
-	color: #888888;
+	color: #b8b8c0;
 	letter-spacing: 0.2em;
 	text-transform: uppercase;
 	display: flex;
@@ -128,14 +128,14 @@ dialog#integration-guide[open]::backdrop {
 
 .guide-text {
 	margin: 0 0 12px 0;
-	font-size: 12px;
+	font-size: 13.5px;
 	line-height: 1.7;
-	color: #a0a0a5;
+	color: #d2d2d9;
 }
 
 .guide-code {
 	font-family: ui-monospace, Menlo, monospace;
-	font-size: 10px;
+	font-size: 12px;
 	background: #111111;
 	padding: 3px 6px;
 	border-radius: 3px;
@@ -158,7 +158,7 @@ dialog#integration-guide[open]::backdrop {
 	border: none;
 	color: #ffffff;
 	font-family: ui-monospace, Menlo, monospace;
-	font-size: 11px;
+	font-size: 12.5px;
 	letter-spacing: 0.02em;
 	white-space: pre;
 }

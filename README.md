@@ -122,20 +122,18 @@ the host and a standalone scene never draw two.
 
 ## Use it in your own project
 
-The audio engine is **dependency-free** and travels as **two folders** you drop
-into your Vite project.
+The audio engine is **dependency-free**. Copy one folder, drop in mp3s, read four signals.
 
 ### Getting started
 
-Copy two folders from this repo into your project's **`public/`** (Vite serves it
-at the root, so the same `/sounds/…` and `/tracks/…` URLs your scenes use just work):
+**Copy the engine.** Vite won't import a `/public` JS file from bundled code, so where it goes depends on your page:
 
-- **`src/sounds/`** → **`public/sounds/`** (the engine - reachable at `/sounds/`)
-- **`public/tracks/`** → **`public/tracks/`** (mp3s + `tracks.json` inside; no mp3s?
-  it falls back to the mic, so this folder is optional)
-- **`vite-plugin-vj-tracks.js`** → your **project root** (the "auto track update"). Register
-  it so `tracks.json` regenerates whenever you add/remove an mp3- without it the playlist goes
-  stale:
+- **Raw page in `public/`** (libs via importmap/CDN, like this repo's scenes):
+  `src/sounds/` → `public/sounds/`. Import `'/sounds/Analyzer.js'`.
+- **Bundled entry** (libs from npm, e.g. `import * as THREE from 'three'`):
+  `src/sounds/` → your `src/sounds/`. Import `'./sounds/Analyzer.js'`.
+
+**Add music.** Copy `public/tracks/` → `public/tracks/` (no mp3s → mic). Copy `vite-plugin-vj-tracks.js` to your root and register it- it keeps `tracks.json` in sync:
 
 ```js
 // vite.config.js
@@ -143,17 +141,16 @@ import vjTracksPlugin from './vite-plugin-vj-tracks.js'
 export default defineConfig( { plugins: [ vjTracksPlugin() ] } )
 ```
 
-Then import it by that URL and read the signals each frame:
+> **Cold start:** the plugin writes `tracks.json` just after Vite's first scan, so a fresh run can't serve it and falls back to the mic. Keep one `tracks.json` in the folder, or restart `pnpm dev` once.
+
+**Read the signals** (both setups):
 
 ```js
-import Analyzer from '/sounds/Analyzer.js'
 const audio = new Analyzer()
 audio.onAudio( a => { /* a.volume · a.kick · a.volumeByFrequency */ } )
 ```
 
-`pnpm dev`, open your page, and it plays the tracks (or mic) so your visuals
-react on their own. (`AnalyzerDebug.js` ships in `src/sounds/` too;
-`new AnalyzerDebug( audio )` for the live overlay.)
+`pnpm dev` and open your page. It plays the tracks (or mic); visuals react on their own. (`AnalyzerDebug.js` ships too- `new AnalyzerDebug( audio )` for the live overlay.)
 
 ### Integrate it here
 
@@ -187,7 +184,7 @@ d       audio debug overlay
 ```
 src/main.js              bootstrap- start overlay, hands off to the VJHost singleton
 src/VJHost.js            the host engine (iframe layers · blink · loop · broadcast)
-src/sounds/Analyzer.js   the audio brain- analysis only (copy the whole folder to public/sounds/ to reuse)
+src/sounds/Analyzer.js   the audio brain- analysis only (copy the whole folder to reuse: public/sounds/ for a raw page, src/sounds/ for a bundled entry)
 src/sounds/SoundPlayer.js    standalone "choose & play the music" (playlist · <audio> · keys)- auto-loaded
 src/sounds/PlayerControl.js  the "now playing" control- shared by the host and standalone scenes
 src/sounds/ui/           the control's markup & styles (string modules, so they ride along with /sounds)
