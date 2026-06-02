@@ -7,16 +7,14 @@
 	<div class="guide-section">
 		<h3 class="guide-section-title">1. Getting started</h3>
 		<p class="guide-text">
-			The engine is dependency-free. Where you copy the <strong>engine folder</strong> depends on how your page loads:
+			The engine is dependency-free.
 		</p>
 		<div class="guide-pre">
-			<code>// static page in public/ (libs via importmap, like this repo's scenes):
-src/sounds/  →  public/sounds/     · then  import Analyzer from '/sounds/Analyzer.js'
+			<code>Copy:
+src/sounds/  →  your src/sounds/
+public/tracks/  →  your public/tracks/
 
-// bundled entry (libs from npm, e.g. src/main.js importing 'three'):
-src/sounds/  →  your src/sounds/   · then  import Analyzer from './sounds/Analyzer.js'
-
-public/tracks/  →  your public/tracks/   · music (or mic), both cases</code>
+import Analyzer from './sounds/Analyzer.js'</code>
 		</div>
 		<p class="guide-text">
 			Register <code class="guide-code">vite-plugin-vj-tracks.js</code> too. It keeps <code class="guide-code">tracks.json</code> in sync, so dropping an <code class="guide-code">.mp3</code> in <code class="guide-code">public/tracks/</code> adds it to the playlist:
@@ -82,11 +80,10 @@ new PlayerControl( { getAudioEl, getSource, getTrackName, onSkip, onSeek } )</co
 			Add your scene as a <strong>local folder</strong> and open a <strong>pull request</strong> (no list to edit). Copy the template, rename it, and edit its <code class="guide-code">index.html</code>:
 		</p>
 		<div class="guide-pre">
-			<code>public/vj-scenes/template/  →  public/vj-scenes/your-name/
-# edit index.html, save, then open a PR</code>
+			<code>public/vj-scenes/template/  →  public/vj-scenes/00-your-name/</code>
 		</div>
 		<p class="guide-text">
-			Save and the dev server auto-detects the folder. Once merged it joins the loop: the host loads it in an iframe and the same <code class="guide-code">Analyzer</code> switches to <strong>receive</strong> mode, reading the show's live audio instead of its own. Nothing in your code changes.
+			Save and the dev server auto-detects the folder. Open a PR when ready, once merged it joins the loop: the host loads it in an iframe and the same <code class="guide-code">Analyzer</code> switches to <strong>receive</strong> mode, reading the show's live audio instead of its own. Nothing in your code changes.
 		</p>
 	</div>
 </div>
